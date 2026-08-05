@@ -40,6 +40,7 @@ test('Icons sind echte, nicht-triviale PNG-Dateien', async () => {
 });
 
 test('Klassisches helles Kartendesign hat vier Wertfarben und Eckzahlen', async () => {
+  const html = await text('index.html');
   const css = await text('styles.css');
   const app = await text('src/app.js');
   const sw = await text('sw.js');
@@ -47,7 +48,8 @@ test('Klassisches helles Kartendesign hat vier Wertfarben und Eckzahlen', async 
     assert.ok(css.includes(token), `CSS-Merkmal fehlt: ${token}`);
   }
   assert.match(app, /data-value=/);
-  assert.match(sw, /tiefstapel-heart-v2/);
+  assert.match(sw, /tiefstapel-heart-v3/);
+  assert.match(html, /online\.bundle\.js\?v=031/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {
