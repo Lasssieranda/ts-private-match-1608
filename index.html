@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#f3eddf">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TIEFSTAPEL">
+  <meta name="description" content="Das taktische Zahlen-Kartenspiel für 2 bis 4 Spieler.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="online.css">
+  <title>TIEFSTAPEL</title>
+</head>
+<body>
+  <section id="online-lobby" class="online-lobby" data-tone="waiting">
+    <div class="online-card">
+      <div class="online-heart">♥</div>
+      <p class="eyebrow">PRIVATE ZWEI-HANDY-PARTIE</p>
+      <h1 id="online-title">Privates Spiel wird vorbereitet</h1>
+      <p id="online-copy">Die verschlüsselte Einladung wird geöffnet …</p>
+      <div class="online-person"><span>Du spielst als</span><strong id="online-role">…</strong></div>
+      <div id="online-status" class="online-status">Wird vorbereitet …</div>
+    </div>
+  </section>
+  <div id="connection-pill" class="connection-pill hidden" data-tone="waiting">Partner wird gesucht …</div>
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="menu-btn" class="icon-btn" aria-label="Neues Spiel">＋</button>
+      <div class="brand"><span class="brand-mark">▼</span><strong>TIEFSTAPEL</strong><small>Niedrig gewinnt</small></div>
+      <button id="install-btn" class="icon-btn install" aria-label="App installieren">⇩</button>
+    </header>
+
+    <section id="scorebar" class="scorebar" aria-label="Punktestand"></section>
+
+    <main>
+      <section id="opponents" class="opponents" aria-label="Andere Auslagen"></section>
+      <section class="table">
+        <div class="turn-copy">
+          <span id="round-label">Runde 1</span>
+          <strong id="turn-label">Spiel vorbereiten</strong>
+          <span id="instruction">Wähle deine Mitspieler.</span>
+        </div>
+
+        <div class="piles" aria-label="Kartenstapel">
+          <button id="deck-pile" class="pile deck" aria-label="Vom Nachziehstapel ziehen">
+            <span class="back-pattern">▼</span><small id="deck-count">150</small>
+          </button>
+          <button id="discard-pile" class="pile card value-blue" data-value="–" aria-label="Offene Karte nehmen"><span id="discard-value">–</span><small>ABLAGE</small></button>
+        </div>
+
+        <div id="drawn-panel" class="drawn-panel hidden">
+          <span>Gezogen</span><div id="drawn-card" class="card drawn">0</div>
+          <button id="discard-drawn" class="secondary">Ablegen & Karte aufdecken</button>
+        </div>
+
+        <div id="board" class="board" aria-label="Aktive Kartenauslage"></div>
+      </section>
+    </main>
+
+    <footer class="bottom-dock">
+      <button id="rules-btn" class="secondary">Spielregeln</button>
+      <span id="status-pill" class="status-pill">Bereit</span>
+      <button id="sound-btn" class="secondary" aria-label="Ton ein oder aus">Ton an</button>
+    </footer>
+  </div>
+
+  <section id="romance-finale" class="romance-finale hidden" aria-live="polite">
+    <div id="romance-bg" class="romance-bg"></div>
+    <div id="romance-hearts" class="romance-hearts" aria-hidden="true"></div>
+    <div class="romance-content">
+      <div id="romance-date" class="romance-date"></div>
+      <figure class="romance-photo-card"><img id="romance-photo" alt="Ein gemeinsamer besonderer Moment"><div class="romance-shine"></div></figure>
+      <article class="romance-message">
+        <p id="romance-eyebrow" class="eyebrow"></p>
+        <h2 id="romance-title"></h2>
+        <p id="romance-body"></p>
+        <p id="romance-signature" class="romance-signature"></p>
+      </article>
+      <button id="romance-close" class="romance-close">Zurück zum Ergebnis</button>
+    </div>
+  </section>
+
+  <dialog id="setup" class="modal">
+    <form method="dialog" class="modal-card" id="setup-form">
+      <div class="hero-symbol">▼</div>
+      <p class="eyebrow">TAKTISCHES KARTENSPIEL</p>
+      <h1>TIEFSTAPEL</h1>
+      <p>Sammle möglichst wenige Punkte. Räume gleiche Dreier-Spalten ab – und beende die Runde im richtigen Moment.</p>
+      <div class="setup-grid">
+        <label>Menschen<select id="human-count"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+        <label>Computer<select id="bot-count"><option>0</option><option selected>1</option><option>2</option><option>3</option></select></label>
+        <label class="wide">KI-Stärke<select id="difficulty"><option value="easy">Locker</option><option value="normal" selected>Taktisch</option><option value="hard">Scharf</option></select></label>
+      </div>
+      <p id="setup-error" class="error" role="alert"></p>
+      <button class="primary" id="start-btn" value="start">Spiel starten</button>
+      <button class="ghost hidden" id="continue-btn" value="continue">Gespeichertes Spiel fortsetzen</button>
+      <small>2–4 Spieler · offline spielbar · kein Konto</small>
+    </form>
+  </dialog>
+
+  <dialog id="info-modal" class="modal">
+    <article class="modal-card rules-card">
+      <button class="close" data-close="info-modal" aria-label="Schließen">×</button>
+      <p class="eyebrow">KURZ ERKLÄRT</p><h2>So wird gespielt</h2>
+      <ol>
+        <li><b>Ziehen:</b> Nimm die offene Ablagekarte oder eine verdeckte Karte.</li>
+        <li><b>Tauschen:</b> Tausche sie gegen eine Karte deiner 3×4-Auslage. Eine verdeckt gezogene Karte darfst du stattdessen ablegen und eine eigene Karte aufdecken.</li>
+        <li><b>Abräumen:</b> Drei gleiche offene Werte in einer senkrechten Spalte verschwinden.</li>
+        <li><b>Rundenende:</b> Wer alles aufgedeckt hat, gibt allen anderen noch einen Zug. Ist der Finisher nicht allein am niedrigsten, werden seine positiven Punkte verdoppelt.</li>
+        <li><b>Spielende:</b> Sobald jemand 100 Punkte erreicht, gewinnt die niedrigste Gesamtpunktzahl.</li>
+      </ol>
+      <button class="primary" data-close="info-modal">Verstanden</button>
+    </article>
+  </dialog>
+
+  <dialog id="result-modal" class="modal"><article class="modal-card result-card" id="result-content"></article></dialog>
+  <dialog id="install-modal" class="modal"><article class="modal-card"><button class="close" data-close="install-modal">×</button><p class="eyebrow">AUF DEM IPHONE</p><h2>Als App installieren</h2><p>Öffne diese Seite in Safari, tippe auf <b>Teilen</b> und danach auf <b>„Zum Home-Bildschirm“</b>.</p><button class="primary" data-close="install-modal">Verstanden</button></article></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="src/app.js"></script>
+  <script type="module" src="src/online.bundle.js"></script>
+</body>
+</html>

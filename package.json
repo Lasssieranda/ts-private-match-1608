@@ -1,0 +1,16 @@
+{
+  "name": "tiefstapel-private-online",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/online-controller.js --bundle --format=esm --minify --outfile=src/online.bundle.js",
+    "test": "node --test tests/*.test.js",
+    "check": "node --check src/engine.js && node --check src/app.js && node --check src/online-controller.js && node --check src/online.bundle.js && node --check sw.js",
+    "serve": "python3 -m http.server 4173"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8",
+    "trystero": "^0.25.3"
+  }
+}
