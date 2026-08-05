@@ -101,7 +101,7 @@ async function init(){
   };
   surpriseAction.onMessage=()=>showFinale();
   room.onPeerJoin=peerId=>{
-    connected=true;setConnection('Verbunden','online');
+    connected=true;hideLobby();setConnection('Verbunden','online');
     if(isHost&&currentState)sendSafe(stateAction,{state:currentState,revision},peerId);
   };
   room.onPeerLeave=()=>{connected=false;setConnection('Verbindung unterbrochen – warte …','waiting');};
