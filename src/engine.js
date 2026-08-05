@@ -33,7 +33,7 @@ export function createGame(playerConfigs, rng = Math.random) {
     })),
     deck: [], discard: [], currentPlayer: 0, drawnCard: null, drawSource: null,
     phase: 'setup', round: 0, roundFinisher: null, finalTurnsLeft: null,
-    previousFinisher: null, winnerIds: [], log: [], rng
+    previousFinisher: null, initialReveals: [], winnerIds: [], log: [], rng
   };
 }
 
@@ -55,30 +55,47 @@ export function startRound(game) {
   game.drawSource = null;
   game.roundFinisher = null;
   game.finalTurnsLeft = null;
+  game.initialReveals = Array(game.players.length).fill(0);
   game.winnerIds = [];
   for (const player of game.players) {
     player.grid = Array.from({ length: 12 }, () => ({ value: drawDeckRaw(game), revealed: false, removed: false }));
     player.roundScore = null;
-    const indexes = shuffle([...Array(12).keys()], game.rng).slice(0, 2);
-    for (const i of indexes) player.grid[i].revealed = true;
   }
   game.discard.push(drawDeckRaw(game));
-  if (game.previousFinisher !== null) {
-    game.currentPlayer = game.previousFinisher;
-  } else {
-    let best = -Infinity;
-    game.players.forEach((player, index) => {
-      const sum = player.grid.filter(c => c.revealed).reduce((n, c) => n + c.value, 0);
-      if (sum > best) { best = sum; game.currentPlayer = index; }
-    });
-  }
-  game.phase = 'choose-pile';
-  game.log = [`Runde ${game.round} beginnt. ${game.players[game.currentPlayer].name} startet.`];
+  game.currentPlayer = 0;
+  game.phase = 'initial-reveal';
+  game.log = [`Runde ${game.round} beginnt. Jeder Spieler deckt zwei Karten auf.`];
   return game;
 }
 
 function requirePhase(game, phase) {
   if (game.phase !== phase) throw new Error(`Aktion in Phase ${game.phase} nicht erlaubt.`);
+}
+
+export function revealInitialCard(game, index) {
+  requirePhase(game, 'initial-reveal');
+  const player = game.players[game.currentPlayer];
+  const card = player?.grid[index];
+  if (!card || card.removed) throw new Error('Diese Kartenposition ist nicht verfügbar.');
+  if (card.revealed) throw new Error('Diese Karte wurde bereits aufgedeckt.');
+  if ((game.initialReveals[game.currentPlayer] ?? 0) >= 2) throw new Error('Es wurden bereits zwei Karten aufgedeckt.');
+  card.revealed = true;
+  game.initialReveals[game.currentPlayer] += 1;
+  if (game.initialReveals[game.currentPlayer] === 2) {
+    const next = game.initialReveals.findIndex(count => count < 2);
+    if (next >= 0) {
+      game.currentPlayer = next;
+    } else {
+      const sums = game.players.map(player => player.grid.filter(card => card.revealed).reduce((sum, card) => sum + card.value, 0));
+      const highest = Math.max(...sums);
+      const candidates = sums.map((sum, playerIndex) => ({ sum, playerIndex })).filter(entry => entry.sum === highest);
+      const selected = candidates[Math.floor(game.rng() * candidates.length)].playerIndex;
+      game.currentPlayer = selected;
+      game.phase = 'choose-pile';
+      game.log.push(`${game.players[selected].name} startet mit ${highest} Punkten.`);
+    }
+  }
+  return game;
 }
 
 export function drawFromDiscard(game) {

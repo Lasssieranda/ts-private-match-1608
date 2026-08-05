@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3 – 2026-08-05
+- Alle zwölf Karten beginnen verdeckt.
+- Jeder Spieler wählt und deckt seine ersten zwei Karten selbst auf.
+- Die höchste Summe der Startkarten bestimmt den ersten Zug; Gleichstände werden fair ausgelost.
+- Dauerhaften Lukas-Host und Jahrestagsjob an die neue Startphase angepasst.
+- App-, Engine-, Bundle- und Service-Worker-Version für Safari aktualisiert.
+
 ## 0.3.2 – 2026-08-05
 - Dauerhaften „Safari-Link kopieren“-Button ergänzt.
 - Vollständige private Einladung inklusive URL-Fragment wird sicher kopiert.

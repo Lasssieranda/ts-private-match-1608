@@ -1,7 +1,7 @@
 import {
-  createGame, startRound, drawFromDiscard, drawFromDeck, swapDrawnCard,
+  createGame, startRound, revealInitialCard, drawFromDiscard, drawFromDeck, swapDrawnCard,
   discardDrawnAndReveal, chooseBotAction, chooseBotDeckResolution
-} from './engine.js';
+} from './engine.js?v=034';
 
 const $ = id => document.getElementById(id);
 const els = {
@@ -75,7 +75,7 @@ function render({broadcast=true}={}){
   if(!game) return;
   const current=game.players[game.currentPlayer];
   els.roundLabel.textContent=`Runde ${game.round}`;
-  els.turnLabel.textContent=game.phase==='round-over'?'Runde beendet':game.phase==='game-over'?'Spiel beendet':`${current.name} ist dran`;
+  els.turnLabel.textContent=game.phase==='round-over'?'Runde beendet':game.phase==='game-over'?'Spiel beendet':game.phase==='initial-reveal'?`${current.name} wählt Startkarten`:`${current.name} ist dran`;
   els.deckCount.textContent=game.deck.length;
   const top=game.discard.at(-1);
   els.discardValue.textContent=top ?? '–';
@@ -84,7 +84,7 @@ function render({broadcast=true}={}){
   els.scorebar.innerHTML=game.players.map((p,i)=>`<div class="score-chip ${i===game.currentPlayer?'active':''}"><span>${esc(p.name)}</span><b>${p.total}</b></div>`).join('');
   els.opponents.innerHTML=game.players.map((p,i)=>({p,i})).filter(x=>x.i!==game.currentPlayer).map(({p,i})=>`<div><div class="mini-player ${i===game.currentPlayer?'active':''}" title="${esc(p.name)}">${p.grid.map((c,j)=>cardMarkup(c,j,true)).join('')}</div></div>`).join('');
   els.board.innerHTML=current.grid.map((c,i)=>cardMarkup(c,i)).join('');
-  els.board.classList.toggle('selecting',canLocalAct()&&['must-swap','deck-choice'].includes(game.phase));
+  els.board.classList.toggle('selecting',canLocalAct()&&['initial-reveal','must-swap','deck-choice'].includes(game.phase));
   els.board.classList.toggle('reveal-mode',revealMode);
   els.drawnPanel.classList.toggle('hidden',game.drawnCard===null);
   if(game.drawnCard!==null){ els.drawnCard.textContent=game.drawnCard; els.drawnCard.dataset.value=game.drawnCard; els.drawnCard.className=`card drawn ${valueClass(game.drawnCard)}`; }
@@ -92,8 +92,10 @@ function render({broadcast=true}={}){
   els.discardDrawn.textContent=revealMode?'Verdeckte Karte antippen …':'Ablegen & Karte aufdecken';
   els.deck.disabled=!canLocalAct()||game.phase!=='choose-pile';
   els.discard.disabled=els.deck.disabled;
-  els.status.textContent=game.roundFinisher!==null&&game.phase==='choose-pile'?`Noch ${game.finalTurnsLeft} Zug/Züge`:canLocalAct()?'Dein Zug':onlineRoom?'Partner ist dran':'Computer denkt …';
+  const initialLeft=2-(game.initialReveals?.[game.currentPlayer]??0);
+  els.status.textContent=game.phase==='initial-reveal'?(canLocalAct()?`Noch ${initialLeft} auswählen`:onlineRoom?'Partner wählt':'Computer wählt'):game.roundFinisher!==null&&game.phase==='choose-pile'?`Noch ${game.finalTurnsLeft} Zug/Züge`:canLocalAct()?'Dein Zug':onlineRoom?'Partner ist dran':'Computer denkt …';
 
+  if(game.phase==='initial-reveal') els.instruction.textContent=canLocalAct()?`Wähle deine ersten zwei Karten – noch ${initialLeft}.`:`${current.name} deckt zwei Startkarten auf …`;
   if(game.phase==='choose-pile') els.instruction.textContent=canLocalAct()?'Wähle Nachziehstapel oder Ablage.':onlineRoom?'Warte auf den anderen Zug …':'Computer denkt nach …';
   if(game.phase==='must-swap') els.instruction.textContent='Tippe auf eine Karte, um sie zu tauschen.';
   if(game.phase==='deck-choice') els.instruction.textContent=revealMode?'Tippe auf eine verdeckte Karte.':'Tausche – oder lege die Ziehkarte ab.';
@@ -120,7 +122,9 @@ function handlePile(source){
 function handleCard(index){
   if(!canLocalAct()||!game) return;
   try{
-    if(game.phase==='must-swap'||(game.phase==='deck-choice'&&!revealMode)){
+    if(game.phase==='initial-reveal'){
+      revealInitialCard(game,index); tone('flip'); haptic();
+    }else if(game.phase==='must-swap'||(game.phase==='deck-choice'&&!revealMode)){
       const before=game.log.length; swapDrawnCard(game,index); tone('flip'); haptic(); announceColumns(before);
     }else if(game.phase==='deck-choice'&&revealMode){
       const before=game.log.length; discardDrawnAndReveal(game,index); revealMode=false; tone('flip'); haptic(); announceColumns(before);
@@ -134,11 +138,15 @@ function announceColumns(logStart){
 
 function scheduleBot(){
   clearTimeout(botTimer);
-  if(!game||!['choose-pile'].includes(game.phase)||game.players[game.currentPlayer].type!=='bot') return;
+  if(!game||!['initial-reveal','choose-pile'].includes(game.phase)||game.players[game.currentPlayer].type!=='bot') return;
   botTimer=setTimeout(runBotTurn,620);
 }
 function runBotTurn(){
-  if(!game||game.phase!=='choose-pile'||game.players[game.currentPlayer].type!=='bot') return;
+  if(!game||!['initial-reveal','choose-pile'].includes(game.phase)||game.players[game.currentPlayer].type!=='bot') return;
+  if(game.phase==='initial-reveal'){
+    const index=game.players[game.currentPlayer].grid.findIndex(card=>!card.revealed&&!card.removed);
+    revealInitialCard(game,index); tone('flip'); render(); return;
+  }
   const action=chooseBotAction(game), before=game.log.length;
   if(action.pile==='discard'){
     drawFromDiscard(game); render();
