@@ -1,7 +1,7 @@
 import {
   createGame, startRound, revealInitialCard, drawFromDiscard, drawFromDeck, swapDrawnCard,
   discardDrawnAndReveal, chooseBotAction, chooseBotDeckResolution
-} from './engine.js?v=034';
+} from './engine.js?v=035';
 
 const $ = id => document.getElementById(id);
 const els = {
@@ -74,6 +74,8 @@ function exportState(){
 function render({broadcast=true}={}){
   if(!game) return;
   const current=game.players[game.currentPlayer];
+  const viewPlayerIndex=onlineRoom?localPlayerIndex:game.currentPlayer;
+  const viewed=game.players[viewPlayerIndex];
   els.roundLabel.textContent=`Runde ${game.round}`;
   els.turnLabel.textContent=game.phase==='round-over'?'Runde beendet':game.phase==='game-over'?'Spiel beendet':game.phase==='initial-reveal'?`${current.name} wählt Startkarten`:`${current.name} ist dran`;
   els.deckCount.textContent=game.deck.length;
@@ -82,8 +84,8 @@ function render({broadcast=true}={}){
   els.discard.className=`pile card ${valueClass(top ?? 0)}`;
   els.discard.dataset.value=top ?? '–';
   els.scorebar.innerHTML=game.players.map((p,i)=>`<div class="score-chip ${i===game.currentPlayer?'active':''}"><span>${esc(p.name)}</span><b>${p.total}</b></div>`).join('');
-  els.opponents.innerHTML=game.players.map((p,i)=>({p,i})).filter(x=>x.i!==game.currentPlayer).map(({p,i})=>`<div><div class="mini-player ${i===game.currentPlayer?'active':''}" title="${esc(p.name)}">${p.grid.map((c,j)=>cardMarkup(c,j,true)).join('')}</div></div>`).join('');
-  els.board.innerHTML=current.grid.map((c,i)=>cardMarkup(c,i)).join('');
+  els.opponents.innerHTML=game.players.map((p,i)=>({p,i})).filter(x=>x.i!==viewPlayerIndex).map(({p,i})=>`<div><div class="mini-player ${i===game.currentPlayer?'active':''}" title="${esc(p.name)}">${p.grid.map((c,j)=>cardMarkup(c,j,true)).join('')}</div></div>`).join('');
+  els.board.innerHTML=viewed.grid.map((c,i)=>cardMarkup(c,i)).join('');
   els.board.classList.toggle('selecting',canLocalAct()&&['initial-reveal','must-swap','deck-choice'].includes(game.phase));
   els.board.classList.toggle('reveal-mode',revealMode);
   els.drawnPanel.classList.toggle('hidden',game.drawnCard===null);

@@ -48,9 +48,9 @@ test('Klassisches helles Kartendesign hat vier Wertfarben und Eckzahlen', async 
     assert.ok(css.includes(token), `CSS-Merkmal fehlt: ${token}`);
   }
   assert.match(app, /data-value=/);
-  assert.match(sw, /tiefstapel-heart-v6/);
-  assert.match(html, /src\/app\.js\?v=034/);
-  assert.match(html, /online\.bundle\.js\?v=034/);
+  assert.match(sw, /tiefstapel-heart-v7/);
+  assert.match(html, /src\/app\.js\?v=035/);
+  assert.match(html, /online\.bundle\.js\?v=035/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {
@@ -66,6 +66,8 @@ test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', a
   assert.match(html, /id="safari-copy"/);
   assert.match(html, /Safari-Link kopieren/);
   assert.match(online, /navigator\.clipboard\.writeText\(location\.href\)/);
+  assert.match(app, /const viewPlayerIndex=onlineRoom\?localPlayerIndex:game\.currentPlayer/);
+  assert.match(app, /const viewed=game\.players\[viewPlayerIndex\]/);
   assert.match(app, /revealInitialCard/);
   assert.match(app, /Wähle deine ersten zwei Karten/);
   assert.match(online, /proposalAction/);

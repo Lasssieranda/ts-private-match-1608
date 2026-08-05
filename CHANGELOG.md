@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.4 – 2026-08-05
+- Online-Auslage bleibt dauerhaft beim lokalen Spieler.
+- Gegnerkarten blitzen beim Zugwechsel nicht mehr in der großen Auslage auf.
+- Offline-Hot-Seat-Verhalten bleibt unverändert.
+- Safari-App- und Service-Worker-Version aktualisiert.
+
 ## 0.3.3 – 2026-08-05
 - Alle zwölf Karten beginnen verdeckt.
 - Jeder Spieler wählt und deckt seine ersten zwei Karten selbst auf.
