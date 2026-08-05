@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 – 2026-08-05
+- Dauerhaften „Safari-Link kopieren“-Button ergänzt.
+- Vollständige private Einladung inklusive URL-Fragment wird sicher kopiert.
+- Zuverlässiger Übergang aus Telegram- und WhatsApp-In-App-Browsern zu Safari.
+- Bundle und Service-Worker-Cache erneut versioniert.
+
 ## 0.3.1 – 2026-08-05
 - Signalisierung von Nostr auf redundante MQTT-WebSocket-Broker umgestellt.
 - Verbindungsaufbau auf Safari und über unterschiedliche Netze robuster gemacht.

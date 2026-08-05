@@ -8,6 +8,17 @@ const isHost=role==='host';
 const $=id=>document.getElementById(id);
 let api=null,room=null,revision=0,applying=false,connected=false,currentState=null,finaleShown=false,photoUrl=null,privateData=null;
 
+async function copySafariLink(){
+  const button=$('safari-copy');
+  let copied=false;
+  try{await navigator.clipboard.writeText(location.href);copied=true;}
+  catch{
+    const field=document.createElement('textarea');field.value=location.href;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();copied=document.execCommand('copy');field.remove();
+  }
+  button.textContent=copied?'Kopiert – in Safari einsetzen':'Kopieren fehlgeschlagen';
+  setTimeout(()=>button.textContent='Safari-Link kopieren',2600);
+}
+
 function base64Key(value){
   const normalized=value.replace(/-/g,'+').replace(/_/g,'/');
   const binary=atob(normalized+'='.repeat((4-normalized.length%4)%4));
@@ -118,5 +129,6 @@ async function init(){
   window.__onlineTest={role,selfId,roomId,get connected(){return connected;},get revision(){return revision;},state:()=>currentState,triggerFinale:()=>{showFinale();sendSafe(surpriseAction,{at:Date.now()});}};
 }
 $('romance-close').addEventListener('click',()=>$('romance-finale').classList.add('hidden'));
+$('safari-copy').addEventListener('click',copySafariLink);
 window.addEventListener('pagehide',()=>{room?.leave();if(photoUrl)URL.revokeObjectURL(photoUrl);});
 init();

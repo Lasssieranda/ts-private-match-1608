@@ -10,3 +10,7 @@ npm run build
 npm test
 npm run check
 ```
+
+## Safari-Übergabe
+
+Falls Telegram oder WhatsApp beim Wechsel zu Safari das private URL-Fragment entfernt, im Spiel auf **„Safari-Link kopieren“** tippen und den kopierten Link vollständig in Safaris Adresszeile einsetzen.
