@@ -47,7 +47,7 @@ test('Klassisches helles Kartendesign hat vier Wertfarben und Eckzahlen', async 
     assert.ok(css.includes(token), `CSS-Merkmal fehlt: ${token}`);
   }
   assert.match(app, /data-value=/);
-  assert.match(sw, /tiefstapel-heart-v1/);
+  assert.match(sw, /tiefstapel-heart-v2/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {
@@ -58,6 +58,7 @@ test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', a
   assert.match(html, /romance-finale/);
   assert.match(app, /canLocalAct/);
   assert.match(app, /tiefstapelOnline/);
+  assert.match(online, /from '@trystero-p2p\/mqtt'/);
   assert.match(online, /joinRoom/);
   assert.match(online, /proposalAction/);
   assert.match(online, /crypto\.subtle\.decrypt/);

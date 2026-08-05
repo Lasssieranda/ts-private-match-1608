@@ -1,4 +1,4 @@
-import {joinRoom,selfId} from 'trystero';
+import {joinRoom,selfId} from '@trystero-p2p/mqtt';
 
 const hash=new URLSearchParams(location.hash.slice(1));
 const roomId=hash.get('room'),password=hash.get('pw'),privateKey=hash.get('k');

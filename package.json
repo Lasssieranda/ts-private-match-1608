@@ -10,7 +10,7 @@
     "serve": "python3 -m http.server 4173"
   },
   "devDependencies": {
-    "esbuild": "^0.25.8",
-    "trystero": "^0.25.3"
+    "@trystero-p2p/mqtt": "^0.25.3",
+    "esbuild": "^0.25.8"
   }
 }

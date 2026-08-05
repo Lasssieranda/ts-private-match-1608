@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 – 2026-08-05
+- Signalisierung von Nostr auf redundante MQTT-WebSocket-Broker umgestellt.
+- Verbindungsaufbau auf Safari und über unterschiedliche Netze robuster gemacht.
+- Service-Worker-Cache auf `tiefstapel-heart-v2` aktualisiert.
+
 ## 0.3.0 – 2026-08-05
 - Separate Zwei-Handy-Ausgabe mit privatem Einladungsraum.
 - Verschlüsselte direkte WebRTC-Synchronisierung für genau zwei Rollen.
