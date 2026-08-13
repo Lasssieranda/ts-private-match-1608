@@ -34,7 +34,7 @@ test('Erste Auswahlphase lässt jeden Spieler genau zwei eigene Karten aufdecken
   revealInitialCard(game, 3);
   assert.equal(game.players[0].grid.filter(c => c.revealed).length, 1);
   assert.equal(game.currentPlayer, 0);
-  assert.throws(() => revealInitialCard(game, 3), /bereits aufgedeckt/);
+  assert.throws(() => revealInitialCard(game, 3), /verdeckte eigene Karte/);
   revealInitialCard(game, 7);
   assert.equal(game.players[0].grid.filter(c => c.revealed).length, 2);
   assert.equal(game.currentPlayer, 1);
@@ -54,7 +54,7 @@ test('Höchste Summe der zwei Startkarten bestimmt den ersten Zug', () => {
   revealInitialCard(game, 1);
   assert.equal(game.phase, 'choose-pile');
   assert.equal(game.currentPlayer, 1);
-  assert.match(game.log.at(-1), /B startet mit 7 Punkten/);
+  assert.match(game.log.at(-1), /B startet mit der höchsten Startsumme/);
 });
 
 test('Offene Ablagekarte muss getauscht werden', () => {

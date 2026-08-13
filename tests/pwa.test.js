@@ -39,18 +39,18 @@ test('Icons sind echte, nicht-triviale PNG-Dateien', async () => {
   }
 });
 
-test('Klassisches helles Kartendesign hat vier Wertfarben und Eckzahlen', async () => {
+test('Premium-Redesign hat vier Wertfarben und Eckzahlen', async () => {
   const html = await text('index.html');
   const css = await text('styles.css');
   const app = await text('src/app.js');
   const sw = await text('sw.js');
-  for (const token of ['--paper:', '--felt:', '.value-blue', '.value-green', '.value-yellow', '.value-red', '.card[data-value]::before', '.card[data-value]::after']) {
+  for (const token of ['--page:', '--felt:', '.value-blue', '.value-green', '.value-yellow', '.value-red', '.card[data-value]::before', '.card[data-value]::after']) {
     assert.ok(css.includes(token), `CSS-Merkmal fehlt: ${token}`);
   }
   assert.match(app, /data-value=/);
-  assert.match(sw, /tiefstapel-heart-v7/);
-  assert.match(html, /src\/app\.js\?v=035/);
-  assert.match(html, /online\.bundle\.js\?v=035/);
+  assert.match(sw, /tiefstapel-heart-v8/);
+  assert.match(html, /src\/app\.js\?v=036/);
+  assert.match(html, /online\.bundle\.js\?v=036/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {

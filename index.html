@@ -2,17 +2,17 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f3eddf">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TIEFSTAPEL">
   <meta name="description" content="Das taktische Zahlen-Kartenspiel für 2 bis 4 Spieler.">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="online.css">
+  <link rel="manifest" href="manifest.webmanifest?v=036">
+  <link rel="apple-touch-icon" href="icons/icon-192.png?v=036">
+  <link rel="icon" href="icons/icon-192.png?v=036">
+  <link rel="stylesheet" href="styles.css?v=036">
+  <link rel="stylesheet" href="online.css?v=036">
   <title>TIEFSTAPEL</title>
 </head>
 <body>
@@ -48,13 +48,13 @@
 
         <div class="piles" aria-label="Kartenstapel">
           <button id="deck-pile" class="pile deck" aria-label="Vom Nachziehstapel ziehen">
-            <span class="back-pattern">▼</span><small id="deck-count">150</small>
+            <span class="back-pattern">▼</span><span class="pile-caption"><span>Stapel</span><b id="deck-count">150</b></span>
           </button>
-          <button id="discard-pile" class="pile card value-blue" data-value="–" aria-label="Offene Karte nehmen"><span id="discard-value">–</span><small>ABLAGE</small></button>
+          <button id="discard-pile" class="pile card value-blue" data-value="–" aria-label="Offene Karte nehmen"><span id="discard-value" class="card-value">–</span><span class="pile-caption">Ablage</span></button>
         </div>
 
         <div id="drawn-panel" class="drawn-panel hidden">
-          <span>Gezogen</span><div id="drawn-card" class="card drawn">0</div>
+          <span class="drawn-copy"><span>Gezogen</span><small>Deine Wahl</small></span><div id="drawn-card" class="card drawn"><span class="card-value">0</span></div>
           <button id="discard-drawn" class="secondary">Ablegen & Karte aufdecken</button>
         </div>
 
@@ -64,7 +64,7 @@
 
     <footer class="bottom-dock">
       <button id="rules-btn" class="secondary">Spielregeln</button>
-      <span id="status-pill" class="status-pill">Bereit</span>
+      <button type="button" id="status-pill" class="status-pill" disabled>Bereit</button>
       <button id="sound-btn" class="secondary" aria-label="Ton ein oder aus">Ton an</button>
     </footer>
   </div>
@@ -85,11 +85,11 @@
     </div>
   </section>
 
-  <dialog id="setup" class="modal">
+  <dialog id="setup" class="modal" aria-labelledby="setup-title">
     <form method="dialog" class="modal-card" id="setup-form">
       <div class="hero-symbol">▼</div>
       <p class="eyebrow">TAKTISCHES KARTENSPIEL</p>
-      <h1>TIEFSTAPEL</h1>
+      <h1 id="setup-title">TIEFSTAPEL</h1>
       <p>Sammle möglichst wenige Punkte. Räume gleiche Dreier-Spalten ab – und beende die Runde im richtigen Moment.</p>
       <div class="setup-grid">
         <label>Menschen<select id="human-count"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
@@ -103,10 +103,10 @@
     </form>
   </dialog>
 
-  <dialog id="info-modal" class="modal">
+  <dialog id="info-modal" class="modal" aria-labelledby="rules-title">
     <article class="modal-card rules-card">
       <button class="close" data-close="info-modal" aria-label="Schließen">×</button>
-      <p class="eyebrow">KURZ ERKLÄRT</p><h2>So wird gespielt</h2>
+      <p class="eyebrow">KURZ ERKLÄRT</p><h2 id="rules-title">So wird gespielt</h2>
       <ol>
         <li><b>Start:</b> Jeder deckt selbst zwei Karten auf. Wer dabei die höchste Summe hat, beginnt.</li>
         <li><b>Ziehen:</b> Nimm die offene Ablagekarte oder eine verdeckte Karte.</li>
@@ -119,10 +119,10 @@
     </article>
   </dialog>
 
-  <dialog id="result-modal" class="modal"><article class="modal-card result-card" id="result-content"></article></dialog>
-  <dialog id="install-modal" class="modal"><article class="modal-card"><button class="close" data-close="install-modal">×</button><p class="eyebrow">AUF DEM IPHONE</p><h2>Als App installieren</h2><p>Öffne diese Seite in Safari, tippe auf <b>Teilen</b> und danach auf <b>„Zum Home-Bildschirm“</b>.</p><button class="primary" data-close="install-modal">Verstanden</button></article></dialog>
+  <dialog id="result-modal" class="modal" aria-labelledby="result-title"><article class="modal-card result-card" id="result-content"></article></dialog>
+  <dialog id="install-modal" class="modal" aria-labelledby="install-title"><article class="modal-card"><button class="close" data-close="install-modal" aria-label="Schließen">×</button><p class="eyebrow">AUF DEM IPHONE</p><h2 id="install-title">Als App installieren</h2><p>Öffne diese Seite in Safari, tippe auf <b>Teilen</b> und danach auf <b>„Zum Home-Bildschirm“</b>.</p><button class="primary" data-close="install-modal">Verstanden</button></article></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="src/app.js?v=035"></script>
-  <script type="module" src="src/online.bundle.js?v=035"></script>
+  <script type="module" src="src/app.js?v=036"></script>
+  <script type="module" src="src/online.bundle.js?v=036"></script>
 </body>
 </html>
