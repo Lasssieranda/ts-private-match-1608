@@ -1,5 +1,5 @@
-const CACHE = 'tiefstapel-heart-v14';
-const SHELL = ['./','index.html','styles.css?v=042','online.css?v=042','src/app.js?v=042','src/engine.js?v=042','src/online.bundle.js?v=042','manifest.webmanifest?v=042','icons/icon-192.png?v=042','icons/icon-512.png?v=042'];
+const CACHE = 'tiefstapel-heart-v15';
+const SHELL = ['./','index.html','styles.css?v=043','online.css?v=043','src/app.js?v=043','src/engine.js?v=043','src/online.bundle.js?v=043','manifest.webmanifest?v=043','icons/icon-192.png?v=043','icons/icon-512.png?v=043'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', event => {

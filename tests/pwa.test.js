@@ -26,7 +26,8 @@ test('Service Worker cached die vollständige App-Shell', async () => {
 test('Mobile CSS nutzt sichere Bereiche und ausreichend große Touchziele', async () => {
   const css = await text('styles.css');
   assert.match(css, /100dvh/);
-  assert.match(css, /safe-area-inset-bottom/);
+  assert.match(css, /html, body \{ height: 100%; margin: 0; overflow: hidden;/);
+  assert.match(css, /height: 100dvh;/);
   assert.match(css, /min-height:\s*48px/);
   assert.match(css, /prefers-reduced-motion/);
 });
@@ -54,9 +55,9 @@ test('Premium-Redesign hat vier Wertfarben und Eckzahlen', async () => {
   assert.match(app, /actionForSeat/);
   for (const token of ['id="discard-stage"','id="turn-trail"','id="self-action"','id="other-action"']) assert.match(html,new RegExp(token));
   for (const token of ['.discard-stage','.turn-trail','.turn-lane-self','.turn-lane-other']) assert.ok(css.includes(token));
-  assert.match(sw, /tiefstapel-heart-v14/);
-  assert.match(html, /src\/app\.js\?v=042/);
-  assert.match(html, /online\.bundle\.js\?v=042/);
+  assert.match(sw, /tiefstapel-heart-v15/);
+  assert.match(html, /src\/app\.js\?v=043/);
+  assert.match(html, /online\.bundle\.js\?v=043/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {

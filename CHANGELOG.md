@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.12 – 2026-08-14
+- Mobile Spielansicht auf festen Vollbildbereich ohne vertikales Seitenscrollen angepasst.
+- Privater Cache `tiefstapel-heart-v15`, App-Shell `?v=043`.
+
 ## 0.3.11 – 2026-08-14
 - Alle Kartenbewegungs- und Ziehgesten entfernt; ursprüngliche Kartendarstellung und Bedienung wiederhergestellt.
 - Privater Cache sicher auf `tiefstapel-heart-v14` / `?v=042` angehoben.
