@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.9 – 2026-08-14
+- Gezogenes Blatt kann direkt auf eine eigene Zielkarte geschoben und dort losgelassen werden; nur der gültige lokale Tausch wird ausgelöst.
+- Sichtbare Ziel-/Ablagemarkierung, Rückfederung bei Abbruch.
+
 ## 0.3.8 – 2026-08-14
 - Regelkonforme Daumen-Ziehgeste auch in der privaten Zwei-Handy-Partie: erlaubte Tauschkarte nach oben zur Ablage ziehen, sonst ruhiges Zurückfedern.
 - Die Geste bleibt an die lokale Rolle und den gültigen Zug gebunden; Spielstand, Synchronisierung und private Inhalte bleiben unverändert.
