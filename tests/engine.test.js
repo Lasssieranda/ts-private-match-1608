@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   buildDeck, createGame, startRound, revealInitialCard, drawFromDiscard, drawFromDeck,
   swapDrawnCard, discardDrawnAndReveal, scoreRound, findCompleteColumns,
-  chooseBotAction, chooseBotDeckResolution
+  chooseBotAction, chooseBotDeckResolution, createSavedGame, restoreSavedGame, SAVE_VERSION
 } from '../src/engine.js';
 
 function completeInitialReveal(game) {
@@ -95,6 +95,24 @@ test('Finisher verdoppelt nur einen positiven Rundenscore, wenn jemand gleichauf
   assert.deepEqual(result, [20, 8, 15]);
   assert.deepEqual(scoreRound([-1, -2], 0), [-1, -2]);
   assert.deepEqual(scoreRound([7, 9], 0), [7, 9]);
+});
+
+test('Zugspur speichert nur öffentliche Ablageaktionen und wird sicher wiederhergestellt', () => {
+  const game = createGame([{name:'A',type:'human'},{name:'B',type:'human'}], () => 0.42);
+  startRound(game);
+  completeInitialReveal(game);
+  const acting = game.currentPlayer;
+  const openDiscard = game.discard.at(-1);
+  drawFromDiscard(game);
+  const discarded = game.players[acting].grid[0].value;
+  swapDrawnCard(game, 0);
+  assert.deepEqual(game.publicActions.slice(-2), [
+    {type:'take-discard',actorIndex:acting,cardValue:openDiscard,sequence:1},
+    {type:'swap',actorIndex:acting,cardValue:discarded,sequence:2}
+  ]);
+  const restored = restoreSavedGame(structuredClone(createSavedGame(game)));
+  assert.equal(SAVE_VERSION, 3);
+  assert.deepEqual(restored.publicActions, game.publicActions);
 });
 
 test('Vier Computer können ein vollständiges Spiel bis zum regulären Spielende austragen', () => {

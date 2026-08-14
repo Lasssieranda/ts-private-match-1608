@@ -48,9 +48,13 @@ test('Premium-Redesign hat vier Wertfarben und Eckzahlen', async () => {
     assert.ok(css.includes(token), `CSS-Merkmal fehlt: ${token}`);
   }
   assert.match(app, /data-value=/);
-  assert.match(sw, /tiefstapel-heart-v8/);
-  assert.match(html, /src\/app\.js\?v=036/);
-  assert.match(html, /online\.bundle\.js\?v=036/);
+  assert.match(app, /publicActions/);
+  assert.match(app, /actionForSeat/);
+  for (const token of ['id="discard-stage"','id="turn-trail"','id="self-action"','id="other-action"']) assert.match(html,new RegExp(token));
+  for (const token of ['.discard-stage','.turn-trail','.turn-lane-self','.turn-lane-other']) assert.ok(css.includes(token));
+  assert.match(sw, /tiefstapel-heart-v9/);
+  assert.match(html, /src\/app\.js\?v=037/);
+  assert.match(html, /online\.bundle\.js\?v=037/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {

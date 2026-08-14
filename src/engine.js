@@ -1,6 +1,7 @@
 export const ROWS = 3;
 export const COLS = 4;
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 3;
+const MAX_PUBLIC_ACTIONS = 6;
 
 const PHASES = new Set(['initial-reveal','choose-pile','must-swap','deck-choice','round-over','game-over']);
 const DIFFICULTIES = new Set(['easy','normal','hard']);
@@ -50,6 +51,15 @@ function savedPlayer(value, index) {
   };
 }
 
+function savedPublicAction(value, playerCount, discard, checkDiscard = true) {
+  if (!isObject(value) || !['round-start','take-discard','swap','discard-and-reveal','clear-column'].includes(value.type)) throw new Error('Ungültige öffentliche Spielaktion im gespeicherten Spiel.');
+  const actorRequired = value.type !== 'round-start';
+  if ((actorRequired && !isIntegerBetween(value.actorIndex, 0, playerCount - 1)) || (!actorRequired && value.actorIndex !== null)) throw new Error('Ungültiger Akteur der öffentlichen Spielaktion.');
+  if (!isIntegerBetween(value.cardValue, CARD_MIN, CARD_MAX) || !isIntegerBetween(value.sequence, 0, 1000000)) throw new Error('Ungültiger Kartenwert der öffentlichen Spielaktion.');
+  if (checkDiscard && ['round-start','swap','discard-and-reveal','clear-column'].includes(value.type) && discard.at(-1) !== value.cardValue) throw new Error('Öffentliche Spielaktion passt nicht zur Ablage.');
+  return { type:value.type, actorIndex:value.actorIndex, cardValue:value.cardValue, sequence:value.sequence };
+}
+
 export function createSavedGame(game) {
   const { rng, ...data } = game;
   return { version: SAVE_VERSION, game: data };
@@ -57,7 +67,7 @@ export function createSavedGame(game) {
 
 export function restoreSavedGame(payload, rng = Math.random) {
   const legacy = isObject(payload) && !Object.prototype.hasOwnProperty.call(payload, 'version') && Array.isArray(payload.players);
-  if (!legacy && (!isObject(payload) || payload.version !== SAVE_VERSION || !isObject(payload.game))) {
+  if (!legacy && (!isObject(payload) || ![1, 2, SAVE_VERSION].includes(payload.version) || !isObject(payload.game))) {
     throw new Error('Der gespeicherte Spielstand hat eine unbekannte Version.');
   }
   const value = legacy ? payload : payload.game;
@@ -80,6 +90,10 @@ export function restoreSavedGame(payload, rng = Math.random) {
   }
   const deck = savedCardList(value.deck, 150, 'Nachziehstapel');
   const discard = savedCardList(value.discard, 150, 'Ablagestapel');
+  const lastPublicAction = value.lastPublicAction === undefined ? { type:'round-start', actorIndex:null, cardValue:discard.at(-1), sequence:0 } : savedPublicAction(value.lastPublicAction, players.length, discard);
+  if (!isIntegerBetween(lastPublicAction.cardValue, CARD_MIN, CARD_MAX)) throw new Error('Fehlende offene Ablage im gespeicherten Spiel.');
+  const publicActions = value.publicActions === undefined ? [lastPublicAction] : value.publicActions.map(action => savedPublicAction(action, players.length, discard, false));
+  if (publicActions.length < 1 || publicActions.length > MAX_PUBLIC_ACTIONS || publicActions.some((action,index)=>index>0&&action.sequence!==publicActions[index-1].sequence+1) || JSON.stringify(publicActions.at(-1)) !== JSON.stringify(lastPublicAction)) throw new Error('Ungültige öffentliche Zugspur im gespeicherten Spiel.');
   const drawnCard = value.drawnCard === null ? null : value.drawnCard;
   if (drawnCard !== null && !isIntegerBetween(drawnCard, CARD_MIN, CARD_MAX)) throw new Error('Ungültige Ziehkarte im gespeicherten Spiel.');
   if (![null,'deck','discard'].includes(value.drawSource)) throw new Error('Ungültige Ziehquelle im gespeicherten Spiel.');
@@ -121,6 +135,8 @@ export function restoreSavedGame(payload, rng = Math.random) {
     previousFinisher: value.previousFinisher,
     winnerIds: [...value.winnerIds],
     initialReveals: [...value.initialReveals],
+    lastPublicAction,
+    publicActions,
     log: [...value.log],
     rng
   };
@@ -158,8 +174,14 @@ export function createGame(playerConfigs, rng = Math.random) {
     })),
     deck: [], discard: [], currentPlayer: 0, drawnCard: null, drawSource: null,
     phase: 'setup', round: 0, roundFinisher: null, finalTurnsLeft: null,
-    previousFinisher: null, winnerIds: [], log: [], rng
+    previousFinisher: null, winnerIds: [], lastPublicAction: null, publicActions: [], log: [], rng
   };
+}
+
+function recordPublicAction(game, type, actorIndex, cardValue) {
+  const action={type,actorIndex,cardValue,sequence:(game.lastPublicAction?.sequence ?? -1)+1};
+  game.lastPublicAction=action;
+  game.publicActions=[...(game.publicActions??[]),action].slice(-MAX_PUBLIC_ACTIONS);
 }
 
 function drawDeckRaw(game) {
@@ -181,12 +203,15 @@ export function startRound(game) {
   game.roundFinisher = null;
   game.finalTurnsLeft = null;
   game.winnerIds = [];
+  game.lastPublicAction = null;
+  game.publicActions = [];
   for (const player of game.players) {
     player.grid = Array.from({ length: 12 }, () => ({ value: drawDeckRaw(game), revealed: false, removed: false }));
     player.roundScore = null;
   }
   game.initialReveals = game.players.map(() => 0);
   game.discard.push(drawDeckRaw(game));
+  recordPublicAction(game, 'round-start', null, game.discard.at(-1));
   if (game.previousFinisher !== null) {
     game.currentPlayer = game.previousFinisher;
   } else {
@@ -236,6 +261,7 @@ export function drawFromDiscard(game) {
   game.drawnCard = game.discard.pop();
   game.drawSource = 'discard';
   game.phase = 'must-swap';
+  recordPublicAction(game, 'take-discard', game.currentPlayer, game.drawnCard);
   return game.drawnCard;
 }
 
@@ -260,6 +286,7 @@ export function swapDrawnCard(game, index) {
   card.value = game.drawnCard;
   card.revealed = true;
   game.discard.push(oldValue);
+  recordPublicAction(game, 'swap', game.currentPlayer, oldValue);
   game.log.push(`${game.players[game.currentPlayer].name} tauscht eine Karte.`);
   game.drawnCard = null;
   game.drawSource = null;
@@ -271,6 +298,7 @@ export function discardDrawnAndReveal(game, index) {
   const card = activeCard(game, index);
   if (card.revealed) throw new Error('Es muss eine verdeckte Karte aufgedeckt werden.');
   game.discard.push(game.drawnCard);
+  recordPublicAction(game, 'discard-and-reveal', game.currentPlayer, game.drawnCard);
   game.drawnCard = null;
   game.drawSource = null;
   card.revealed = true;
@@ -295,6 +323,7 @@ export function clearCompleteColumns(game, playerIndex = game.currentPlayer) {
       game.discard.push(player.grid[index].value);
       player.grid[index].removed = true;
     }
+    recordPublicAction(game, 'clear-column', playerIndex, game.discard.at(-1));
     game.log.push(`${player.name} räumt eine Dreier-Spalte ab.`);
   }
   return columns;

@@ -1,6 +1,6 @@
 # Project State
 
-Version 0.3.0: separate private Zwei-Handy-Testausgabe.
+Version 0.3.6: separate private Zwei-Handy-Ausgabe mit ruhigem festen Spieltisch und getrennter Zugspur.
 
 ## Funktionen
 - Zwei menschliche Rollen auf getrennten Browsern

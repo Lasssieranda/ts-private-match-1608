@@ -2,13 +2,13 @@ import {
   createGame, startRound, revealInitialCard, drawFromDiscard, drawFromDeck, swapDrawnCard,
   discardDrawnAndReveal, chooseBotAction, chooseBotDeckResolution, chooseBotMandatorySwap,
   createSavedGame, restoreSavedGame
-} from './engine.js?v=036';
+} from './engine.js?v=037';
 
 const $ = id => document.getElementById(id);
 const els = {
   setup:$('setup'), setupForm:$('setup-form'), humans:$('human-count'), bots:$('bot-count'), difficulty:$('difficulty'),
   setupError:$('setup-error'), continueBtn:$('continue-btn'), scorebar:$('scorebar'), opponents:$('opponents'), board:$('board'),
-  deck:$('deck-pile'), discard:$('discard-pile'), deckCount:$('deck-count'), discardValue:$('discard-value'),
+  deck:$('deck-pile'), discard:$('discard-pile'), deckCount:$('deck-count'), discardValue:$('discard-value'), selfAction:$('self-action'), otherAction:$('other-action'),
   roundLabel:$('round-label'), turnLabel:$('turn-label'), instruction:$('instruction'), drawnPanel:$('drawn-panel'),
   drawnCard:$('drawn-card'), discardDrawn:$('discard-drawn'), status:$('status-pill'), result:$('result-modal'), resultContent:$('result-content'), toast:$('toast')
 };
@@ -31,6 +31,20 @@ function canLocalAct(){ return isHumanTurn() && (!onlineRoom || game.currentPlay
 function liveCards(player){ return player.grid.filter(card => !card.removed); }
 function hiddenCount(player){ return liveCards(player).filter(card => !card.revealed).length; }
 function esc(text){ const d=document.createElement('div'); d.textContent=text; return d.innerHTML; }
+function actionCopy(action){
+  const actor=action?.actorIndex === null || action?.actorIndex === undefined ? null : game.players[action.actorIndex]?.name;
+  if(!action) return 'Noch keine öffentliche Aktion.';
+  if(action.type==='take-discard') return `${actor} nimmt ${action.cardValue} von der Ablage.`;
+  if(action.type==='swap') return `${actor} legt ${action.cardValue} ab.`;
+  if(action.type==='discard-and-reveal') return `${actor} legt ${action.cardValue} ab und deckt auf.`;
+  if(action.type==='clear-column') return `${actor} räumt eine Dreier-Spalte ab.`;
+  return 'Runde beginnt.';
+}
+function actionForSeat(seat,own){
+  const actions=(game.publicActions?.length?game.publicActions:[game.lastPublicAction]).filter(Boolean);
+  const action=[...actions].reverse().find(item=>item.actorIndex!==null&&(own?item.actorIndex===seat:item.actorIndex!==seat));
+  return action?actionCopy(action):own?'Du hast noch keine öffentliche Aktion.':'Dein Partner hat noch keine öffentliche Aktion.';
+}
 
 function tone(kind='tap'){
   if(!soundOn) return;
@@ -94,6 +108,8 @@ function render({broadcast=true}={}){
   els.discardValue.textContent=top ?? '–';
   els.discard.className=`pile card ${valueClass(top ?? 0)}`;
   els.discard.dataset.value=top ?? '–';
+  els.selfAction.textContent=actionForSeat(viewPlayerIndex,true);
+  els.otherAction.textContent=actionForSeat(viewPlayerIndex,false);
   els.scorebar.innerHTML=game.players.map((p,i)=>`<div class="score-chip ${i===game.currentPlayer?'active':''}"><i class="player-dot" aria-hidden="true"></i><span class="score-meta"><span>${esc(p.name)}</span><small>${i===game.currentPlayer?'Am Zug':'Gesamt'}</small></span><b>${p.total}</b></div>`).join('');
   els.opponents.innerHTML=game.players.map((p,i)=>({p,i})).filter(x=>x.i!==viewPlayerIndex).map(({p,i})=>{
     const hidden=hiddenCount(p), removed=p.grid.filter(card=>card.removed).length, open=liveCards(p).length-hidden;

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.6 – 2026-08-14
+- Ruhiger fester eigener Spieltisch mit gestapeltem Ablagebereich auch in der privaten Zwei-Handy-Partie.
+- Neue getrennte Zugspur zeigt parallel den letzten eigenen und den letzten Partnerzug; sie speichert ausschließlich öffentliche Aktionen.
+- Private Online-Synchronisierung, verschlüsselte persönliche Inhalte und Finale bleiben unverändert.
+- App-Shell auf `?v=037`, privater Offline-Cache auf `tiefstapel-heart-v9`.
+
 ## 0.3.4 – 2026-08-05
 - Online-Auslage bleibt dauerhaft beim lokalen Spieler.
 - Gegnerkarten blitzen beim Zugwechsel nicht mehr in der großen Auslage auf.
