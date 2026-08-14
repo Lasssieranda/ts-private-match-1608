@@ -49,14 +49,16 @@ test('Premium-Redesign hat vier Wertfarben und Eckzahlen', async () => {
   }
   assert.match(app, /data-value=/);
   assert.match(app, /opponent-table/);
-  for (const token of ['.opponent-table','.mini-card.back','.mini-card.open']) assert.ok(css.includes(token), `Gegnertisch-Stil fehlt: ${token}`);
+  assert.match(app, /pointerdown/);
+  assert.match(app, /canDragCard/);
+  for (const token of ['.card.dragging','body.dragging-card','#discard-stage']) assert.ok(css.includes(token), `Ziehgeste-Stil fehlt: ${token}`);
   assert.match(app, /publicActions/);
   assert.match(app, /actionForSeat/);
   for (const token of ['id="discard-stage"','id="turn-trail"','id="self-action"','id="other-action"']) assert.match(html,new RegExp(token));
   for (const token of ['.discard-stage','.turn-trail','.turn-lane-self','.turn-lane-other']) assert.ok(css.includes(token));
-  assert.match(sw, /tiefstapel-heart-v10/);
-  assert.match(html, /src\/app\.js\?v=038/);
-  assert.match(html, /online\.bundle\.js\?v=038/);
+  assert.match(sw, /tiefstapel-heart-v11/);
+  assert.match(html, /src\/app\.js\?v=039/);
+  assert.match(html, /online\.bundle\.js\?v=039/);
 });
 
 test('Private Online-Version enthält Rollen-, Sync- und Finale-Oberflächen', async () => {

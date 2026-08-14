@@ -429,6 +429,10 @@ main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
   transition: transform .17s ease, filter .2s ease, opacity .2s ease, box-shadow .2s ease;
 }
 .board .card:active { transform: translateY(2px) scale(.95); }
+.board .card.dragging { position:relative; z-index:8; touch-action:none; transform:translate3d(var(--drag-x),var(--drag-y),0) rotate(var(--drag-rotate)) scale(1.055); filter:brightness(1.08); box-shadow:0 16px 22px #092d2870, 0 0 0 3px #f1d68a88; transition:none; }
+.board .card.drag-return { animation:cardDragReturn .22s cubic-bezier(.2,.85,.25,1); }
+body.dragging-card #discard-stage { filter:brightness(1.12); transform:scale(1.06); }
+body.dragging-card #discard-stage::after { content:'ABLAGEN'; position:absolute; z-index:8; bottom:-13px; color:#f6dda0; font-size:7px; font-weight:900; letter-spacing:.14em; text-shadow:0 1px 2px #092d28; }
 .board .card.back { color: transparent; }
 .board .card.removed { visibility: hidden; pointer-events: none; }
 .board.selecting .card:not(.removed) { cursor: pointer; }
@@ -571,9 +575,14 @@ main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
   0%, 100% { box-shadow: 0 2px 0 #1029234a, 0 7px 14px #092d286b, 0 0 0 0 #e2aa4b10; }
   50% { box-shadow: 0 2px 0 #1029234a, 0 8px 17px #092d2875, 0 0 0 5px #e2aa4b28; }
 }
+@keyframes cardDragReturn { 0% { transform:translate3d(var(--drag-x,0),var(--drag-y,0),0) rotate(var(--drag-rotate,0)) scale(1.05); } 65% { transform:translate3d(-3px,2px,0) rotate(-1deg) scale(.99); } 100% { transform:none; } }
 @keyframes modalIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
 @keyframes cardIn { from { opacity: 0; transform: translateY(-8px) rotate(-3deg) scale(.92); } to { opacity: 1; transform: none; } }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; }
+  .board .card.dragging { transform:translate3d(var(--drag-x),var(--drag-y),0) !important; }
+}
 @media (max-height: 850px) {
   .opponents { min-height: 65px; padding:2px 5px 5px; }
   .opponent-name { display:none; }

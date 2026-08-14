@@ -2,7 +2,7 @@ import {
   createGame, startRound, revealInitialCard, drawFromDiscard, drawFromDeck, swapDrawnCard,
   discardDrawnAndReveal, chooseBotAction, chooseBotDeckResolution, chooseBotMandatorySwap,
   createSavedGame, restoreSavedGame
-} from './engine.js?v=038';
+} from './engine.js?v=039';
 
 const $ = id => document.getElementById(id);
 const els = {
@@ -18,6 +18,8 @@ let botTimer = null;
 let deferredInstallPrompt = null;
 let soundOn = localStorage.getItem('tiefstapel-sound') !== 'off';
 let audioContext = null;
+let cardDrag = null;
+let suppressCardClick = false;
 const onlineParams = new URLSearchParams(location.hash.slice(1));
 const onlineRoom = onlineParams.get('room');
 const onlineRole = onlineParams.get('role');
@@ -31,6 +33,35 @@ function canLocalAct(){ return isHumanTurn() && (!onlineRoom || game.currentPlay
 function liveCards(player){ return player.grid.filter(card => !card.removed); }
 function hiddenCount(player){ return liveCards(player).filter(card => !card.revealed).length; }
 function esc(text){ const d=document.createElement('div'); d.textContent=text; return d.innerHTML; }
+function canDragCard(){ return canLocalAct() && (game.phase==='must-swap'||(game.phase==='deck-choice'&&!revealMode)); }
+function clearCardDrag(returnCard=false){
+  if(!cardDrag) return;
+  const {card}=cardDrag;
+  card.style.removeProperty('--drag-x'); card.style.removeProperty('--drag-y'); card.style.removeProperty('--drag-rotate');
+  card.classList.remove('dragging');
+  if(returnCard){ card.classList.add('drag-return'); setTimeout(()=>card.classList.remove('drag-return'),220); }
+  document.body.classList.remove('dragging-card'); cardDrag=null;
+}
+function startCardDrag(event){
+  if(event.button!==undefined&&event.button!==0||!canDragCard()) return;
+  const card=event.target.closest('#board .card[data-index]'); if(!card) return;
+  cardDrag={card,index:Number(card.dataset.index),x:event.clientX,y:event.clientY,armed:false};
+  card.setPointerCapture?.(event.pointerId); event.preventDefault();
+}
+function moveCardDrag(event){
+  if(!cardDrag) return;
+  const dx=Math.max(-36,Math.min(36,event.clientX-cardDrag.x));
+  const dy=Math.max(-78,Math.min(18,event.clientY-cardDrag.y));
+  const armed=dy<-28 && Math.abs(dy)>Math.abs(dx)*1.15;
+  if(armed&&!cardDrag.armed){ cardDrag.armed=true; haptic(8); }
+  cardDrag.card.classList.add('dragging'); cardDrag.card.style.setProperty('--drag-x',`${dx}px`); cardDrag.card.style.setProperty('--drag-y',`${dy}px`); cardDrag.card.style.setProperty('--drag-rotate',`${dx/9}deg`);
+  document.body.classList.toggle('dragging-card',armed);
+}
+function finishCardDrag(){
+  if(!cardDrag) return;
+  const {index,armed}=cardDrag; clearCardDrag(!armed);
+  if(armed){ suppressCardClick=true; handleCard(index); setTimeout(()=>suppressCardClick=false,0); }
+}
 function actionCopy(action){
   const actor=action?.actorIndex === null || action?.actorIndex === undefined ? null : game.players[action.actorIndex]?.name;
   if(!action) return 'Noch keine öffentliche Aktion.';
@@ -222,7 +253,11 @@ els.setupForm.addEventListener('submit',event=>{ event.preventDefault(); startNe
 els.continueBtn.addEventListener('click',event=>{ event.preventDefault(); if(load()){ els.setup.close(); render(); } });
 els.deck.addEventListener('click',()=>handlePile('deck'));
 els.discard.addEventListener('click',()=>handlePile('discard'));
-els.board.addEventListener('click',event=>{ const card=event.target.closest('[data-index]'); if(card) handleCard(Number(card.dataset.index)); });
+els.board.addEventListener('pointerdown',startCardDrag);
+els.board.addEventListener('pointermove',moveCardDrag);
+els.board.addEventListener('pointerup',finishCardDrag);
+els.board.addEventListener('pointercancel',()=>clearCardDrag(true));
+els.board.addEventListener('click',event=>{ if(suppressCardClick) return; const card=event.target.closest('[data-index]'); if(card) handleCard(Number(card.dataset.index)); });
 els.discardDrawn.addEventListener('click',()=>{ if(!canLocalAct()) return; revealMode=!revealMode; tone('tap'); render(); });
 $('rules-btn').onclick=()=>$('info-modal').showModal();
 $('menu-btn').onclick=()=>{ clearTimeout(botTimer); els.setup.showModal(); };
