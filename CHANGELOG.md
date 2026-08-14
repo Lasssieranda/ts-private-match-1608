@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.3.9 – 2026-08-14
-- Gezogenes Blatt kann direkt auf eine eigene Zielkarte geschoben und dort losgelassen werden; nur der gültige lokale Tausch wird ausgelöst.
-- Sichtbare Ziel-/Ablagemarkierung, Rückfederung bei Abbruch.
+## 0.3.10 – 2026-08-14
+- Die Ziehkarte-auf-Zielkarte-Geste wurde auf Wunsch zurückgenommen; vorherige Bedienung wiederhergestellt.
+- Privater App-Cache sicher auf `tiefstapel-heart-v13` / `?v=041` angehoben.
 
 ## 0.3.8 – 2026-08-14
 - Regelkonforme Daumen-Ziehgeste auch in der privaten Zwei-Handy-Partie: erlaubte Tauschkarte nach oben zur Ablage ziehen, sonst ruhiges Zurückfedern.
