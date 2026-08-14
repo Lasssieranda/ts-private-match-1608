@@ -2,7 +2,7 @@ import {
   createGame, startRound, revealInitialCard, drawFromDiscard, drawFromDeck, swapDrawnCard,
   discardDrawnAndReveal, chooseBotAction, chooseBotDeckResolution, chooseBotMandatorySwap,
   createSavedGame, restoreSavedGame
-} from './engine.js?v=037';
+} from './engine.js?v=038';
 
 const $ = id => document.getElementById(id);
 const els = {
@@ -113,7 +113,7 @@ function render({broadcast=true}={}){
   els.scorebar.innerHTML=game.players.map((p,i)=>`<div class="score-chip ${i===game.currentPlayer?'active':''}"><i class="player-dot" aria-hidden="true"></i><span class="score-meta"><span>${esc(p.name)}</span><small>${i===game.currentPlayer?'Am Zug':'Gesamt'}</small></span><b>${p.total}</b></div>`).join('');
   els.opponents.innerHTML=game.players.map((p,i)=>({p,i})).filter(x=>x.i!==viewPlayerIndex).map(({p,i})=>{
     const hidden=hiddenCount(p), removed=p.grid.filter(card=>card.removed).length, open=liveCards(p).length-hidden;
-    return `<div class="opponent"><span class="opponent-name" aria-hidden="true">${esc(p.name)}</span><span class="opponent-summary sr-only">${esc(p.name)}: ${open} offen, ${hidden} verdeckt, ${removed} entfernt.</span><div class="mini-player ${i===game.currentPlayer?'active':''}" aria-hidden="true">${p.grid.map((c,j)=>cardMarkup(c,j,true)).join('')}</div></div>`;
+    return `<div class="opponent"><span class="opponent-name" aria-hidden="true">${esc(p.name)}</span><span class="opponent-summary sr-only">${esc(p.name)}: ${open} offen, ${hidden} verdeckt, ${removed} entfernt.</span><div class="opponent-table mini-player ${i===game.currentPlayer?'active':''}" aria-hidden="true">${p.grid.map((c,j)=>cardMarkup(c,j,true)).join('')}</div></div>`;
   }).join('');
   els.board.innerHTML=viewed.grid.map((c,i)=>cardMarkup(c,i)).join('');
   const canSelect=canLocalAct()&&['initial-reveal','must-swap','deck-choice'].includes(game.phase);

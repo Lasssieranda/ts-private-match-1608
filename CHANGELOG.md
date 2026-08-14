@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.7 – 2026-08-14
+- Partnerauslage als klarer, sichtbarer 3×4-Tisch mit eigenen Kartenrückseiten, offenen Werten und entfernten Kartenlücken.
+- Aktiver Partnertisch erhält eine zurückhaltende Hervorhebung; die große eigene Auslage bleibt privat und unverändert.
+- App-Shell auf `?v=038`, privater Offline-Cache auf `tiefstapel-heart-v10`.
+
 ## 0.3.6 – 2026-08-14
 - Ruhiger fester eigener Spieltisch mit gestapeltem Ablagebereich auch in der privaten Zwei-Handy-Partie.
 - Neue getrennte Zugspur zeigt parallel den letzten eigenen und den letzten Partnerzug; sie speichert ausschließlich öffentliche Aktionen.
