@@ -1,13 +1,8 @@
 # Changelog
 
-## 0.3.10 – 2026-08-14
-- Die Ziehkarte-auf-Zielkarte-Geste wurde auf Wunsch zurückgenommen; vorherige Bedienung wiederhergestellt.
-- Privater App-Cache sicher auf `tiefstapel-heart-v13` / `?v=041` angehoben.
-
-## 0.3.8 – 2026-08-14
-- Regelkonforme Daumen-Ziehgeste auch in der privaten Zwei-Handy-Partie: erlaubte Tauschkarte nach oben zur Ablage ziehen, sonst ruhiges Zurückfedern.
-- Die Geste bleibt an die lokale Rolle und den gültigen Zug gebunden; Spielstand, Synchronisierung und private Inhalte bleiben unverändert.
-- App-Shell auf `?v=039`, privater Offline-Cache auf `tiefstapel-heart-v11`.
+## 0.3.11 – 2026-08-14
+- Alle Kartenbewegungs- und Ziehgesten entfernt; ursprüngliche Kartendarstellung und Bedienung wiederhergestellt.
+- Privater Cache sicher auf `tiefstapel-heart-v14` / `?v=042` angehoben.
 
 ## 0.3.7 – 2026-08-14
 - Partnerauslage als klarer, sichtbarer 3×4-Tisch mit eigenen Kartenrückseiten, offenen Werten und entfernten Kartenlücken.
